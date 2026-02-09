@@ -1,19 +1,31 @@
 'use server';
 
 import { Topic } from '@/types/news';
-import { mockTopics } from '@/data/mockData';
+import { apiClient } from '@/lib/api';
+import { ApiTopic, PaginatedResponse } from '@/types/api';
+
+// Helper to convert API topic to app topic format
+function convertApiTopic(apiTopic: ApiTopic): Topic {
+  return {
+    id: apiTopic.id.toString(),
+    name: apiTopic.name || 'Unknown Topic',
+    imageUrl: apiTopic.image_url || '',
+    viewCount: apiTopic.views || 0,
+    type: 'person', // Default, can be enhanced based on backend data
+  };
+}
 
 export async function getTopics(): Promise<Topic[]> {
-  await new Promise(resolve => setTimeout(resolve, 50));
-  return mockTopics;
+  const response = await apiClient.get<PaginatedResponse<ApiTopic>>('/topics/');
+  return response.results.map(convertApiTopic);
 }
 
 export async function getTopicById(id: string): Promise<Topic | undefined> {
-  await new Promise(resolve => setTimeout(resolve, 50));
-  return mockTopics.find(topic => topic.id === id);
+  const apiTopic = await apiClient.get<ApiTopic>(`/topics/${id}/`);
+  return convertApiTopic(apiTopic);
 }
 
 export async function getTrendingTopics(): Promise<Topic[]> {
-  await new Promise(resolve => setTimeout(resolve, 50));
-  return mockTopics.slice(0, 8);
+  const topics = await getTopics();
+  return topics.sort((a, b) => b.viewCount - a.viewCount).slice(0, 8);
 }

@@ -2,10 +2,9 @@
 
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import { UserProfile, UserPreferences, Article, Topic } from '@/types/news';
-import { mockUser, mockArticles } from '@/data/mockData';
 
 interface AppContextType {
-  user: UserProfile;
+  user: UserProfile | null;
   preferences: UserPreferences;
   savedArticles: Article[];
   followedTopics: Topic[];
@@ -20,16 +19,14 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<UserProfile>(mockUser);
+  const [user, setUser] = useState<UserProfile | null>(null);
   const [preferences, setPreferences] = useState<UserPreferences>({
     theme: 'light',
     fontSize: 'medium',
     notifications: true,
   });
-  const [savedArticles, setSavedArticles] = useState<Article[]>(
-    mockArticles.filter(a => a.isBookmarked)
-  );
-  const [followedTopics, setFollowedTopics] = useState<Topic[]>(mockUser.topicsFollowed);
+  const [savedArticles, setSavedArticles] = useState<Article[]>([]);
+  const [followedTopics, setFollowedTopics] = useState<Topic[]>([]);
 
   const updatePreferences = useCallback((prefs: Partial<UserPreferences>) => {
     setPreferences(prev => ({ ...prev, ...prefs }));

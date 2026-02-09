@@ -17,6 +17,14 @@ export function ProfileClient() {
   const router = useRouter();
   const { user, followedTopics } = useApp();
 
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-muted-foreground">Please log in to view your profile</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Desktop Sidebar */}
@@ -45,13 +53,13 @@ export function ProfileClient() {
             className="flex flex-col items-center pt-4 pb-6"
           >
             <img
-              src={user.avatar}
-              alt={user.name}
+              src={user?.avatar || '/default-avatar.png'}
+              alt={user?.name || 'User'}
               className="w-24 h-24 rounded-full object-cover ring-4 ring-secondary mb-4"
             />
-            <h2 className="text-xl font-bold">{user.name}</h2>
+            <h2 className="text-xl font-bold">{user?.name || 'User'}</h2>
             <p className="text-muted-foreground text-sm">
-              {user.role} <span className="text-primary">{user.username}</span>
+              {user?.role} <span className="text-primary">{user?.username}</span>
             </p>
           </motion.div>
 

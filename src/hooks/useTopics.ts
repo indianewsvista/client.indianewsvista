@@ -1,9 +1,8 @@
 import { useState, useMemo } from 'react';
 import { Topic } from '@/types/news';
-import { mockTopics } from '@/data/mockData';
 
 export function useTopics() {
-  const [topics] = useState<Topic[]>(mockTopics);
+  const [topics, setTopics] = useState<Topic[]>([]);
   const [activeTab, setActiveTab] = useState<'People' | 'Company' | 'Days'>('People');
 
   const filteredTopics = useMemo(() => {
@@ -27,5 +26,6 @@ export function useTopics() {
     topTopics,
     activeTab,
     setActiveTab,
+    setTopics,
   };
 }

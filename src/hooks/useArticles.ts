@@ -1,9 +1,8 @@
 import { useState, useCallback, useMemo } from 'react';
 import { Article, Category } from '@/types/news';
-import { mockArticles } from '@/data/mockData';
 
 export function useArticles() {
-  const [articles, setArticles] = useState<Article[]>(mockArticles);
+  const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | 'all'>('all');
 
@@ -34,11 +33,9 @@ export function useArticles() {
     return articles.find(article => article.id === id);
   }, [articles]);
 
-  const fetchArticles = useCallback(async () => {
+  const fetchArticles = useCallback(async (fetchedArticles: Article[]) => {
     setIsLoading(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setArticles(mockArticles);
+    setArticles(fetchedArticles);
     setIsLoading(false);
   }, []);
 

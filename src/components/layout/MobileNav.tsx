@@ -62,8 +62,8 @@ export function MobileNav() {
             />
           )}
           <img 
-            src={user.avatar}
-            alt={user.name}
+            src={user?.avatar || '/default-avatar.png'}
+            alt={user?.name || 'User'}
             className={cn(
               'w-5 h-5 rounded-full object-cover relative z-10 ring-1',
               pathname === '/profile' ? 'ring-primary' : 'ring-transparent'
@@ -73,7 +73,7 @@ export function MobileNav() {
             'text-xs font-medium relative z-10 transition-colors',
             pathname === '/profile' ? 'text-primary' : 'text-muted-foreground'
           )}>
-            {user.name.split(' ')[0]}
+            {user?.name?.split(' ')[0] || 'User'}
           </span>
         </Link>
       </div>

@@ -9,6 +9,10 @@ import Link from 'next/link';
  }
  
  export function TrendingCollection({ articles }: TrendingCollectionProps) {
+   if (!articles || articles.length === 0) {
+     return null;
+   }
+   
    return (
      <section className="mt-6">
        <h3 className="text-lg font-bold mb-4 px-4">Trending Collection</h3>

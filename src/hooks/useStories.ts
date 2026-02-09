@@ -1,9 +1,8 @@
  import { useState, useCallback, useMemo } from 'react';
  import { Story } from '@/types/story';
- import { mockStories } from '@/data/storiesData';
  
  export function useStories() {
-   const [stories, setStories] = useState<Story[]>(mockStories);
+   const [stories, setStories] = useState<Story[]>([]);
  
    const markAsViewed = useCallback((storyId: string) => {
      setStories(prev => prev.map(story => 
@@ -20,6 +19,7 @@
  
    return {
      stories: sortedStories,
+     setStories,
      markAsViewed,
    };
  }

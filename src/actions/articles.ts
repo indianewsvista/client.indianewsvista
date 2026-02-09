@@ -1,31 +1,66 @@
 'use server';
 
 import { Article } from '@/types/news';
-import { mockArticles } from '@/data/mockData';
+import { apiClient } from '@/lib/api';
+import { ApiArticle, PaginatedResponse } from '@/types/api';
 
-export async function getArticles() {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 100));
-  return mockArticles;
+// Helper to convert API article to app article format
+function convertApiArticle(apiArticle: ApiArticle): Article {
+  const content = apiArticle.content || '';
+  const wordCount = content ? content.split(' ').length : 0;
+  
+  return {
+    id: apiArticle.id.toString(),
+    title: apiArticle.title || 'Untitled',
+    summary: apiArticle.excerpt || '',
+    content: content,
+    imageUrl: apiArticle.image_url || '',
+    source: {
+      name: apiArticle.author || 'Unknown',
+      logo: '',
+    },
+    author: {
+      name: apiArticle.author || 'Unknown',
+      avatar: '',
+    },
+    category: apiArticle.category?.slug as Article['category'] || 'world',
+    publishedAt: apiArticle.published_at || new Date().toISOString(),
+    readingTime: wordCount > 0 ? Math.ceil(wordCount / 200) : 1,
+    upvotes: apiArticle.likes_count || 0,
+    isBookmarked: apiArticle.is_bookmarked || false,
+    isTrending: apiArticle.is_featured || apiArticle.is_breaking || false,
+    aiSummary: apiArticle.excerpt || '',
+    tags: apiArticle.tags || [],
+  };
+}
+
+export async function getArticles(): Promise<Article[]> {
+  const response = await apiClient.get<PaginatedResponse<ApiArticle>>('/articles/');
+  return response.results.map(convertApiArticle);
 }
 
 export async function getArticleById(id: string): Promise<Article | undefined> {
-  await new Promise(resolve => setTimeout(resolve, 50));
-  return mockArticles.find(article => article.id === id);
+  const apiArticle = await apiClient.get<ApiArticle>(`/articles/${id}/`);
+  return convertApiArticle(apiArticle);
 }
 
 export async function getTrendingArticles(): Promise<Article[]> {
-  await new Promise(resolve => setTimeout(resolve, 100));
-  return mockArticles.filter(article => article.isTrending);
+  const response = await apiClient.get<PaginatedResponse<ApiArticle>>('/articles/featured/');
+  return response.results.map(convertApiArticle);
 }
 
 export async function getArticlesByCategory(category: string): Promise<Article[]> {
-  await new Promise(resolve => setTimeout(resolve, 100));
-  if (category === 'all') return mockArticles;
-  return mockArticles.filter(article => article.category === category);
+  if (category === 'all') {
+    return getArticles();
+  }
+  const response = await apiClient.get<PaginatedResponse<ApiArticle>>(
+    `/articles/by_category/?slug=${category}`
+  );
+  return response.results.map(convertApiArticle);
 }
 
 export async function getBookmarkedArticles(articleIds: string[]): Promise<Article[]> {
-  await new Promise(resolve => setTimeout(resolve, 100));
-  return mockArticles.filter(article => articleIds.includes(article.id));
+  // This will use the authenticated API endpoint
+  const response = await apiClient.get<PaginatedResponse<ApiArticle>>('/articles/bookmarked/');
+  return response.results.map(convertApiArticle);
 }

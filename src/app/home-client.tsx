@@ -20,8 +20,14 @@ interface HomeClientProps {
 export function HomeClient({ initialArticles, initialTrendingArticles, initialStories }: HomeClientProps) {
   const [activeCategory, setActiveCategory] = useState('Trending');
   
-  const heroArticle = useMemo(() => initialTrendingArticles[0], [initialTrendingArticles]);
-  const otherArticles = useMemo(() => initialTrendingArticles.slice(1), [initialTrendingArticles]);
+  // Use trending articles if available, otherwise fall back to regular articles
+  const articlesToDisplay = useMemo(() => 
+    initialTrendingArticles.length > 0 ? initialTrendingArticles : initialArticles,
+    [initialTrendingArticles, initialArticles]
+  );
+  
+  const heroArticle = useMemo(() => articlesToDisplay[0], [articlesToDisplay]);
+  const otherArticles = useMemo(() => articlesToDisplay.slice(1), [articlesToDisplay]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -63,13 +69,13 @@ export function HomeClient({ initialArticles, initialTrendingArticles, initialSt
           </div>
 
           {/* Trending Collection */}
-          <TrendingCollection articles={otherArticles.slice(1)} />
+          <TrendingCollection articles={otherArticles.slice(1, 3)} />
 
-          {/* More Articles - Desktop */}
-          <section className="hidden lg:block mt-8">
+          {/* Latest News - Mobile & Desktop */}
+          <section className="mt-8">
             <h3 className="text-lg font-bold mb-4">Latest News</h3>
-            <div className="grid grid-cols-2 xl:grid-cols-3 gap-4">
-              {initialArticles.slice(0, 6).map((article, i) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+              {articlesToDisplay.slice(3, 9).map((article, i) => (
                 <ArticleCard key={article.id} article={article} index={i} />
               ))}
             </div>
