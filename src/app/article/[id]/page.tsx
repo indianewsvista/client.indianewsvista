@@ -3,8 +3,9 @@ import { notFound } from 'next/navigation';
 import { ArticleDetailClient } from './article-detail-client';
 import { getArticleById, getArticles } from '@/actions/articles';
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const article = await getArticleById(params.id);
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const article = await getArticleById(id);
   
   if (!article) {
     return {
@@ -23,9 +24,10 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   };
 }
 
-export default async function ArticleDetailPage({ params }: { params: { id: string } }) {
+export default async function ArticleDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const [article, allArticles] = await Promise.all([
-    getArticleById(params.id),
+    getArticleById(id),
     getArticles(),
   ]);
 
@@ -34,7 +36,7 @@ export default async function ArticleDetailPage({ params }: { params: { id: stri
   }
 
   const relatedArticles = allArticles
-    .filter(a => a.id !== params.id && a.category === article.category)
+    .filter(a => a.id !== id && a.category === article.category)
     .slice(0, 3);
 
   return <ArticleDetailClient article={article} relatedArticles={relatedArticles} />;

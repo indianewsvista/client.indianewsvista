@@ -21,7 +21,7 @@ const categoryColors: Record<string, { bg: string; accent: string }> = {
 
 interface CategoryClientProps {
   category: string;
-  categoryInfo: { id: string; label: string; icon: string };
+  categoryInfo: { id: string; label: string; icon?: string };
   initialArticles: Article[];
 }
 

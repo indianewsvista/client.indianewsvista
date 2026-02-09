@@ -4,8 +4,9 @@ import { CategoryClient } from './category-client';
 import { getArticlesByCategory } from '@/actions/articles';
 import { categories } from '@/data/mockData';
 
-export async function generateMetadata({ params }: { params: { category: string } }): Promise<Metadata> {
-  const categoryInfo = categories.find(c => c.id === params.category);
+export async function generateMetadata({ params }: { params: Promise<{ category: string }> }): Promise<Metadata> {
+  const { category } = await params;
+  const categoryInfo = categories.find(c => c.id === category);
   
   if (!categoryInfo) {
     return {
@@ -19,14 +20,15 @@ export async function generateMetadata({ params }: { params: { category: string 
   };
 }
 
-export default async function CategoryPage({ params }: { params: { category: string } }) {
-  const categoryInfo = categories.find(c => c.id === params.category);
+export default async function CategoryPage({ params }: { params: Promise<{ category: string }> }) {
+  const { category } = await params;
+  const categoryInfo = categories.find(c => c.id === category);
   
   if (!categoryInfo) {
     notFound();
   }
 
-  const articles = await getArticlesByCategory(params.category);
+  const articles = await getArticlesByCategory(category);
 
-  return <CategoryClient category={params.category} categoryInfo={categoryInfo} initialArticles={articles} />;
+  return <CategoryClient category={category} categoryInfo={categoryInfo} initialArticles={articles} />;
 }
