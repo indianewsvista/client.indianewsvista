@@ -12,9 +12,9 @@ import { Story } from '@/types/story';
 const homeCategories = ['Trending', 'My topic', 'Local news', 'Fact check', 'Good news'];
 
 interface HomeClientProps {
-  initialArticles: Article[];
-  initialTrendingArticles: Article[];
-  initialStories: Story[];
+  readonly initialArticles: Article[];
+  readonly initialTrendingArticles: Article[];
+  readonly initialStories: Story[];
 }
 
 export function HomeClient({ initialArticles, initialTrendingArticles, initialStories }: HomeClientProps) {
